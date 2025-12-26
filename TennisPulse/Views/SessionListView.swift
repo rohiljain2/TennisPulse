@@ -21,12 +21,14 @@ struct SessionListView: View {
                 }
             }
             .navigationTitle("Training Sessions")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingNewSession = true
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
                     }
                 }
             }
@@ -41,35 +43,67 @@ struct SessionListView: View {
     private var sessionList: some View {
         List {
             ForEach(groupedSessions.keys.sorted(by: >), id: \.self) { date in
-                Section(header: Text(date, style: .date)) {
+                Section(header: sectionHeader(for: date)) {
                     ForEach(groupedSessions[date] ?? []) { session in
                         NavigationLink {
-                            SessionDetailView(session: session)
+                            if session.isCompleted {
+                                SessionSummaryView(session: session)
+                            } else {
+                                SessionDetailView(session: session)
+                            }
                         } label: {
                             SessionRowView(session: session)
                         }
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                     }
                 }
             }
         }
+        .listStyle(.insetGrouped)
+    }
+    
+    private func sectionHeader(for date: Date) -> some View {
+        HStack {
+            Text(date, style: .date)
+                .font(.headline)
+                .foregroundColor(.primary)
+            Spacer()
+        }
+        .textCase(nil)
     }
     
     private var emptyStateView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Image(systemName: "figure.tennis")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
+                .font(.system(size: 80))
+                .foregroundStyle(.tertiary)
             
-            Text("No Training Sessions")
-                .font(.title2)
-                .fontWeight(.semibold)
+            VStack(spacing: 8) {
+                Text("No Training Sessions")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+                Text("Start tracking your tennis training sessions")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
             
-            Text("Tap the + button to start your first training session")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            Button {
+                showingNewSession = true
+            } label: {
+                Label("Start First Session", systemImage: "plus.circle.fill")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor)
+                    .cornerRadius(12)
+            }
+            .padding(.top, 8)
         }
+        .padding(.horizontal, 40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     // MARK: - Computed Properties
@@ -85,40 +119,61 @@ struct SessionRowView: View {
     let session: TrainingSession
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
+        HStack(spacing: 16) {
+            // Time indicator
+            VStack(alignment: .leading, spacing: 4) {
                 Text(session.date, style: .time)
                     .font(.headline)
+                    .foregroundColor(.primary)
                 
-                Spacer()
-                
-                Text(session.formattedTotalDuration)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            HStack(spacing: 16) {
-                ForEach(SetType.allCases, id: \.self) { type in
-                    if let count = session.setsByType[type], count > 0 {
-                        Label("\(count)", systemImage: type.icon)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                if session.hasActiveSet {
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 6, height: 6)
+                        Text("Active")
+                            .font(.caption2)
+                            .foregroundColor(.green)
                     }
                 }
             }
             
-            if session.hasActiveSet {
-                HStack {
-                    Image(systemName: "circle.fill")
-                        .font(.system(size: 8))
-                        .foregroundColor(.green)
-                    Text("Active")
-                        .font(.caption)
-                        .foregroundColor(.green)
+            Spacer()
+            
+            // Set type badges
+            HStack(spacing: 8) {
+                ForEach(SetType.allCases, id: \.self) { type in
+                    if let count = session.setsByType[type], count > 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: type.icon)
+                                .font(.caption2)
+                            Text("\(count)")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                    }
+                }
+            }
+            
+            // Duration
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(session.formattedTotalDuration)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                if session.completedSetsCount > 0 {
+                    Text("\(session.completedSetsCount) sets")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                 }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
     }
 }
 

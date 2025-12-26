@@ -25,6 +25,23 @@ struct SessionDetailView: View {
                     activeSetSection
                     setsList
                     notesSection
+                    
+                    if viewModel.isSessionCompleted {
+                        NavigationLink {
+                            SessionSummaryView(session: viewModel.session)
+                        } label: {
+                            HStack {
+                                Image(systemName: "chart.bar.fill")
+                                Text("View Summary")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.accentColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                    }
                 }
                 .padding()
             }
@@ -68,6 +85,11 @@ struct SessionDetailView: View {
                     showingSetTypePicker = false
                 }
             }
+            .onChange(of: viewModel.isSessionCompleted) { isCompleted in
+                if isCompleted {
+                    // Optionally navigate to summary or show completion
+                }
+            }
         }
     }
     
@@ -96,42 +118,98 @@ struct SessionDetailView: View {
     private var activeSetSection: some View {
         Group {
             if viewModel.hasActiveSet, let activeSet = viewModel.activeSet {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Label("Active Set", systemImage: "circle.fill")
-                            .font(.headline)
-                            .foregroundColor(.green)
-                        Spacer()
-                        Button("End Set") {
-                            viewModel.endActiveSet()
+                VStack(spacing: 16) {
+                    // Active set card
+                    VStack(spacing: 12) {
+                        HStack {
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(Color.green)
+                                    .frame(width: 12, height: 12)
+                                Text("Active Set")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                            }
+                            Spacer()
                         }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    
-                    HStack {
-                        Label(activeSet.type.displayName, systemImage: activeSet.type.icon)
-                        Spacer()
-                        Text(activeSet.formattedDuration)
-                            .font(.title3)
-                            .monospacedDigit()
+                        
+                        Divider()
+                        
+                        HStack {
+                            HStack(spacing: 12) {
+                                Image(systemName: activeSet.type.icon)
+                                    .font(.title2)
+                                    .foregroundColor(.blue)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.blue.opacity(0.1))
+                                    .clipShape(Circle())
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(activeSet.type.displayName)
+                                        .font(.headline)
+                                    Text("Started \(activeSet.startTime, style: .relative)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text(activeSet.formattedDuration)
+                                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                                    .monospacedDigit()
+                                    .foregroundColor(.green)
+                                Text("Duration")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
                     .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.green.opacity(0.08))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color.green.opacity(0.2), lineWidth: 1)
+                            )
+                    )
+                    
+                    // End Set button
+                    Button {
+                        viewModel.endActiveSet()
+                    } label: {
+                        HStack {
+                            Image(systemName: "stop.circle.fill")
+                            Text("End Set")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
                 }
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(12)
             } else {
+                // Start New Set button
                 Button {
                     showingSetTypePicker = true
                 } label: {
-                    Label("Start New Set", systemImage: "play.circle.fill")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                    HStack {
+                        Image(systemName: "play.circle.fill")
+                            .font(.title3)
+                        Text("Start New Set")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
                 }
-                .buttonStyle(.borderedProminent)
             }
         }
     }

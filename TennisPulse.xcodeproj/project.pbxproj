@@ -10,6 +10,7 @@
 		A1000001 /* TennisPulseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000 /* TennisPulseApp.swift */; };
 		A1000002 /* SessionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003 /* SessionListView.swift */; };
 		A1000004 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000005 /* SessionDetailView.swift */; };
+		A1000039 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000040 /* SessionSummaryView.swift */; };
 		A1000006 /* TrainingSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000007 /* TrainingSessionViewModel.swift */; };
 		A1000008 /* SessionDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000009 /* SessionDetailViewModel.swift */; };
 		A1000010 /* TrainingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011 /* TrainingSession.swift */; };
@@ -22,6 +23,7 @@
 		A1000000 /* TennisPulseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TennisPulseApp.swift; sourceTree = "<group>"; };
 		A1000003 /* SessionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionListView.swift; sourceTree = "<group>"; };
 		A1000005 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		A1000040 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		A1000007 /* TrainingSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingSessionViewModel.swift; sourceTree = "<group>"; };
 		A1000009 /* SessionDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailViewModel.swift; sourceTree = "<group>"; };
 		A1000011 /* TrainingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingSession.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 			children = (
 				A1000003 /* SessionListView.swift */,
 				A1000005 /* SessionDetailView.swift */,
+				A1000040 /* SessionSummaryView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -176,6 +179,7 @@
 				A1000001 /* TennisPulseApp.swift in Sources */,
 				A1000002 /* SessionListView.swift in Sources */,
 				A1000004 /* SessionDetailView.swift in Sources */,
+				A1000039 /* SessionSummaryView.swift in Sources */,
 				A1000006 /* TrainingSessionViewModel.swift in Sources */,
 				A1000008 /* SessionDetailViewModel.swift in Sources */,
 				A1000010 /* TrainingSession.swift in Sources */,
