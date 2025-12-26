@@ -17,6 +17,15 @@
 		A1000012 /* TrainingSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013 /* TrainingSet.swift */; };
 		A1000014 /* SetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000015 /* SetType.swift */; };
 		A1000016 /* TrainingSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017 /* TrainingSessionService.swift */; };
+		A1000053 /* TennisAnalyzerBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1000042 /* TennisAnalyzerBridge.mm */; };
+		A1000054 /* tennis_analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1000044 /* tennis_analyzer.cpp */; };
+		A1000055 /* TennisAnalyzerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000046 /* TennisAnalyzerService.swift */; };
+		A1000056 /* SessionAnalyticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000048 /* SessionAnalyticsViewModel.swift */; };
+		A1000057 /* AnalyticsExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000050 /* AnalyticsExampleView.swift */; };
+		A1000059 /* SetDurationConsistencyChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000060 /* SetDurationConsistencyChart.swift */; };
+		A1000061 /* ActiveRestTimeChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000062 /* ActiveRestTimeChart.swift */; };
+		A1000063 /* TrainingDensityChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000064 /* TrainingDensityChart.swift */; };
+		A1000065 /* SessionsAnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000066 /* SessionsAnalyticsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +41,18 @@
 		A1000017 /* TrainingSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingSessionService.swift; sourceTree = "<group>"; };
 		A1000018 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1000035 /* TennisPulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TennisPulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1000041 /* TennisAnalyzerBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TennisAnalyzerBridge.h; sourceTree = "<group>"; };
+		A1000042 /* TennisAnalyzerBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TennisAnalyzerBridge.mm; sourceTree = "<group>"; };
+		A1000044 /* tennis_analyzer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tennis_analyzer.cpp; sourceTree = "<group>"; };
+		A1000051 /* tennis_analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tennis_analyzer.hpp; sourceTree = "<group>"; };
+		A1000046 /* TennisAnalyzerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TennisAnalyzerService.swift; sourceTree = "<group>"; };
+		A1000048 /* SessionAnalyticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAnalyticsViewModel.swift; sourceTree = "<group>"; };
+		A1000050 /* AnalyticsExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsExampleView.swift; sourceTree = "<group>"; };
+		A1000058 /* TennisPulse-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TennisPulse-Bridging-Header.h"; sourceTree = "<group>"; };
+		A1000060 /* SetDurationConsistencyChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDurationConsistencyChart.swift; sourceTree = "<group>"; };
+		A1000062 /* ActiveRestTimeChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRestTimeChart.swift; sourceTree = "<group>"; };
+		A1000064 /* TrainingDensityChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingDensityChart.swift; sourceTree = "<group>"; };
+		A1000066 /* SessionsAnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsAnalyticsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +82,8 @@
 				A1000023 /* ViewModels */,
 				A1000024 /* Models */,
 				A1000025 /* Services */,
+				A1000052 /* Analytics */,
+				A1000058 /* TennisPulse-Bridging-Header.h */,
 				A1000018 /* Info.plist */,
 			);
 			path = TennisPulse;
@@ -80,8 +103,21 @@
 				A1000003 /* SessionListView.swift */,
 				A1000005 /* SessionDetailView.swift */,
 				A1000040 /* SessionSummaryView.swift */,
+				A1000050 /* AnalyticsExampleView.swift */,
+				A1000066 /* SessionsAnalyticsView.swift */,
+				A1000067 /* Charts */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		A1000067 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				A1000060 /* SetDurationConsistencyChart.swift */,
+				A1000062 /* ActiveRestTimeChart.swift */,
+				A1000064 /* TrainingDensityChart.swift */,
+			);
+			path = Charts;
 			sourceTree = "<group>";
 		};
 		A1000023 /* ViewModels */ = {
@@ -89,6 +125,7 @@
 			children = (
 				A1000007 /* TrainingSessionViewModel.swift */,
 				A1000009 /* SessionDetailViewModel.swift */,
+				A1000048 /* SessionAnalyticsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -109,6 +146,18 @@
 				A1000017 /* TrainingSessionService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		A1000052 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A1000041 /* TennisAnalyzerBridge.h */,
+				A1000042 /* TennisAnalyzerBridge.mm */,
+				A1000051 /* tennis_analyzer.hpp */,
+				A1000044 /* tennis_analyzer.cpp */,
+				A1000046 /* TennisAnalyzerService.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -186,6 +235,15 @@
 				A1000012 /* TrainingSet.swift in Sources */,
 				A1000014 /* SetType.swift in Sources */,
 				A1000016 /* TrainingSessionService.swift in Sources */,
+				A1000053 /* TennisAnalyzerBridge.mm in Sources */,
+				A1000054 /* tennis_analyzer.cpp in Sources */,
+				A1000055 /* TennisAnalyzerService.swift in Sources */,
+				A1000056 /* SessionAnalyticsViewModel.swift in Sources */,
+				A1000057 /* AnalyticsExampleView.swift in Sources */,
+				A1000059 /* SetDurationConsistencyChart.swift in Sources */,
+				A1000061 /* ActiveRestTimeChart.swift in Sources */,
+				A1000063 /* TrainingDensityChart.swift in Sources */,
+				A1000065 /* SessionsAnalyticsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,8 +395,17 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TennisPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TennisPulse/TennisPulse-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/TennisPulse/Analytics",
+					"$(inherited)",
+				);
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"$(inherited)",
+				);
 			};
 			name = Debug;
 		};
@@ -368,8 +435,17 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TennisPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TennisPulse/TennisPulse-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/TennisPulse/Analytics",
+					"$(inherited)",
+				);
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"$(inherited)",
+				);
 			};
 			name = Release;
 		};

@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import Charts
 
 struct SessionSummaryView: View {
     @StateObject private var viewModel: SessionDetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var analyticsResult: TennisAnalysisResult?
+    @State private var analyticsError: String?
     
     init(session: TrainingSession) {
         _viewModel = StateObject(wrappedValue: SessionDetailViewModel(session: session))
@@ -22,6 +25,19 @@ struct SessionSummaryView: View {
                     sessionHeader
                     metricsSection
                     setsBreakdown
+                    
+                    // Charts Section
+                    chartsSection
+                    
+                    // C++ Analytics Section
+                    if let analytics = analyticsResult {
+                        analyticsSection(analytics: analytics)
+                    } else if let error = analyticsError {
+                        analyticsErrorSection(error: error)
+                    } else {
+                        analyticsLoadingSection
+                    }
+                    
                     if let notes = viewModel.session.notes, !notes.isEmpty {
                         notesSection
                     }
@@ -29,6 +45,9 @@ struct SessionSummaryView: View {
                 .padding()
             }
             .navigationTitle("Session Summary")
+            .onAppear {
+                analyzeSession()
+            }
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -123,13 +142,31 @@ struct SessionSummaryView: View {
                     color: .orange
                 )
                 
-                // Sets by Type
+                // Longest Set
                 if let longest = viewModel.session.longestSetDuration {
                     MetricCard(
                         title: "Longest Set",
                         value: formatDuration(longest),
                         icon: "arrow.up.circle.fill",
                         color: .purple
+                    )
+                }
+                
+                // C++ Analytics - Consistency Score
+                if let analytics = analyticsResult {
+                    MetricCard(
+                        title: "Consistency",
+                        value: analytics.formattedConsistencyScore,
+                        icon: "chart.line.uptrend.xyaxis",
+                        color: .green
+                    )
+                    
+                    // C++ Analytics - Training Density
+                    MetricCard(
+                        title: "Density",
+                        value: analytics.formattedTrainingDensityScore,
+                        icon: "gauge.high",
+                        color: .orange
                     )
                 }
             }
@@ -172,12 +209,222 @@ struct SessionSummaryView: View {
         }
     }
     
+    // MARK: - Charts Section
+    
+    private var chartsSection: some View {
+        VStack(spacing: 20) {
+            // Set Duration Consistency Chart
+            SetDurationConsistencyChart(sets: viewModel.session.sets)
+            
+            // Active vs Rest Time Chart
+            ActiveRestTimeChart(session: viewModel.session)
+        }
+    }
+    
+    // MARK: - C++ Analytics Section
+    
+    private func analyticsSection(analytics: TennisAnalysisResult) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "brain.head.profile")
+                    .foregroundColor(.blue)
+                Text("Advanced Analytics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+            
+            VStack(spacing: 12) {
+                // Consistency Score
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Consistency Score")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text(analytics.consistencyLevel)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(analytics.formattedConsistencyScore)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(consistencyColor(analytics.consistencyScore))
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                
+                // Training Density
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Training Density")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text(analytics.densityLevel)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(analytics.formattedTrainingDensityScore)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(densityColor(analytics.trainingDensityScore))
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                
+                // Work/Rest Ratio
+                HStack {
+                    Text("Work/Rest Ratio")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(String(format: "%.2f", analytics.workRestRatio))
+                        .font(.headline)
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.blue.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                )
+        )
+    }
+    
+    private func consistencyColor(_ score: Double) -> Color {
+        switch score {
+        case 0.8...1.0: return .green
+        case 0.6..<0.8: return .blue
+        case 0.4..<0.6: return .orange
+        default: return .red
+        }
+    }
+    
+    private func densityColor(_ score: Double) -> Color {
+        switch score {
+        case 0.8...1.0: return .purple
+        case 0.6..<0.8: return .blue
+        case 0.4..<0.6: return .orange
+        default: return .gray
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    private func analyzeSession() {
+        let analyzer = TennisAnalyzerService.shared
+        
+        // Reset state
+        analyticsResult = nil
+        analyticsError = nil
+        
+        // Extract durations from completed sets
+        let durations = viewModel.session.sets
+            .filter { $0.isCompleted && $0.isValid }
+            .compactMap { $0.duration }
+        
+        // Check if we have any sets to analyze
+        guard !durations.isEmpty else {
+            analyticsError = "No completed sets to analyze"
+            return
+        }
+        
+        // For now, use default intensity of 3 (moderate)
+        // You can add intensity tracking to sets later
+        let intensities = Array(repeating: UInt8(3), count: durations.count)
+        
+        guard durations.count == intensities.count else {
+            analyticsError = "Invalid data: durations and intensities count mismatch"
+            return
+        }
+        
+        // Calculate rest durations from gaps between sets
+        let restDurations = viewModel.session.restDurations
+        
+        // Perform C++ analysis
+        analyticsResult = analyzer.analyze(
+            durations: durations,
+            intensities: intensities,
+            restDurations: restDurations.isEmpty ? nil : restDurations
+        )
+        
+        if analyticsResult == nil {
+            analyticsError = "Analysis failed - please check your session data"
+        }
+    }
+    
+    private var analyticsLoadingSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "brain.head.profile")
+                    .foregroundColor(.blue)
+                Text("Advanced Analytics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+            
+            HStack {
+                ProgressView()
+                    .scaleEffect(0.8)
+                Text("Analyzing session...")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.blue.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.blue.opacity(0.2), lineWidth: 1)
+                )
+        )
+    }
+    
+    private func analyticsErrorSection(error: String) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundColor(.orange)
+                Text("Advanced Analytics")
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+            
+            Text(error)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.orange.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
 }
 

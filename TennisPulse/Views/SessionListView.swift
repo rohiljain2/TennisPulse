@@ -23,6 +23,17 @@ struct SessionListView: View {
             .navigationTitle("Training Sessions")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if !viewModel.sessions.isEmpty {
+                        NavigationLink {
+                            SessionsAnalyticsView(sessions: viewModel.sessions)
+                        } label: {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.title3)
+                        }
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingNewSession = true
@@ -119,7 +130,7 @@ struct SessionRowView: View {
     let session: TrainingSession
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             // Time indicator
             VStack(alignment: .leading, spacing: 4) {
                 Text(session.date, style: .time)
@@ -137,28 +148,31 @@ struct SessionRowView: View {
                     }
                 }
             }
-            
-            Spacer()
+            .frame(width: 70, alignment: .leading)
             
             // Set type badges
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 ForEach(SetType.allCases, id: \.self) { type in
                     if let count = session.setsByType[type], count > 0 {
-                        HStack(spacing: 4) {
+                        HStack(spacing: 3) {
                             Image(systemName: type.icon)
                                 .font(.caption2)
                             Text("\(count)")
                                 .font(.caption)
                                 .fontWeight(.medium)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
                         .foregroundColor(.secondary)
-                        .padding(.horizontal, 8)
+                        .padding(.horizontal, 6)
                         .padding(.vertical, 4)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
                     }
                 }
             }
+            .layoutPriority(1)
+            
+            Spacer(minLength: 8)
             
             // Duration
             VStack(alignment: .trailing, spacing: 2) {

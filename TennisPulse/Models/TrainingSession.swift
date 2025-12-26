@@ -119,6 +119,40 @@ struct TrainingSession: Identifiable, Codable, Equatable {
             }
     }
     
+    /// Calculate rest durations between sets based on time gaps
+    /// Returns an array of rest durations in seconds, one for each gap between consecutive sets
+    var restDurations: [TimeInterval] {
+        let completedSets = sets
+            .filter { $0.isCompleted && $0.isValid }
+            .sorted { $0.startTime < $1.startTime }
+        
+        guard completedSets.count > 1 else {
+            return []
+        }
+        
+        var restDurations: [TimeInterval] = []
+        
+        for i in 0..<(completedSets.count - 1) {
+            let currentSet = completedSets[i]
+            let nextSet = completedSets[i + 1]
+            
+            // Rest duration is the gap between end of current set and start of next set
+            guard let currentEndTime = currentSet.endTime else { continue }
+            
+            let restDuration = nextSet.startTime.timeIntervalSince(currentEndTime)
+            
+            // Only count positive rest durations (ignore overlapping sets)
+            if restDuration > 0 {
+                restDurations.append(restDuration)
+            } else {
+                // If sets overlap or start immediately, assume minimal rest (1 second)
+                restDurations.append(1.0)
+            }
+        }
+        
+        return restDurations
+    }
+    
     // MARK: - State Properties
     
     /// Whether the session has any active sets
